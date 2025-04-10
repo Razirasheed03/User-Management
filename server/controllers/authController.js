@@ -11,7 +11,7 @@ const generateToken = (user) => {
   );
 };
 
-// @desc    Register new user
+
 exports.registerUser = async (req, res) => {
   const { name, email, password } = req.body;
 

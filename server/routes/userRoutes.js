@@ -2,10 +2,10 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const User = require('../models/User');
+const { verifyToken } = require('../middlewares/verifyToken'); 
 const router = express.Router();
-const verifyToken = require('../middlewares/verifyToken'); // You already have this!
 
-// Configure storage
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads/');
@@ -16,15 +16,34 @@ const storage = multer.diskStorage({
     },
 });
 
-const upload = multer({ storage });
 
-// Upload profile image
+const fileFilter = (req, file, cb) => {
+    const allowedTypes = ['.png', '.jpg', '.jpeg', '.webp'];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowedTypes.includes(ext)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Only images are allowed (.png, .jpg, .jpeg, .webp)'), false);
+    }
+};
+
+const upload = multer({ storage, fileFilter });
+
+
 router.post('/upload-profile', verifyToken, upload.single('profileImage'), async (req, res) => {
     try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
         const userId = req.user.id;
         const imageUrl = req.file.filename;
 
-        const user = await User.findByIdAndUpdate(userId, { profileImage: imageUrl }, { new: true });
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { profileImage: imageUrl },
+            { new: true }
+        );
 
         res.status(200).json({ user, message: 'Profile image updated successfully' });
     } catch (err) {
