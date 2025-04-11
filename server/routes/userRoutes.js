@@ -84,5 +84,29 @@ router.get('/all-users', verifyToken, async (req, res) => {
     }
   });
   
+  router.put('/edit-user/:id', verifyToken, async (req, res) => {
+    try {
+      if (!req.user.isAdmin) {
+        return res.status(403).json({ message: 'Only admins can edit users' });
+      }
+  
+      const { name, email, isAdmin } = req.body;
+  
+      const updatedUser = await User.findByIdAndUpdate(
+        req.params.id,
+        { name, email, isAdmin },
+        { new: true }
+      ).select('-password');
+  
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      res.status(200).json({ user: updatedUser, message: 'User updated successfully' });
+    } catch (err) {
+      res.status(500).json({ message: 'Update failed', error: err.message });
+    }
+  });
+  
   
 module.exports = router;
