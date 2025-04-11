@@ -64,5 +64,25 @@ router.get('/all-users', verifyToken, async (req, res) => {
       res.status(500).json({ message: 'Failed to fetch users', error: err.message });
     }
   });
+  router.delete('/delete-user/:id', verifyToken, async (req, res) => {
+    try {
+      if (!req.user.isAdmin) {
+        return res.status(403).json({ message: 'Only admins can delete users' });
+      }
+  
+      const userId = req.params.id;
+  
+      const deletedUser = await User.findByIdAndDelete(userId);
+  
+      if (!deletedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      res.status(200).json({ message: 'User deleted successfully', deletedUser });
+    } catch (err) {
+      res.status(500).json({ message: 'Deletion failed', error: err.message });
+    }
+  });
+  
   
 module.exports = router;
