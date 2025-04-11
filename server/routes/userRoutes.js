@@ -2,8 +2,9 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const User = require('../models/User');
-const { verifyToken } = require('../middlewares/verifyToken'); 
+const { verifyToken ,verifyAdmin} = require('../middlewares/verifyToken'); 
 const router = express.Router();
+// const { authenticateUser } = require('../middlewares/authMiddleware');
 
 
 const storage = multer.diskStorage({
@@ -107,6 +108,39 @@ router.get('/all-users', verifyToken, async (req, res) => {
       res.status(500).json({ message: 'Update failed', error: err.message });
     }
   });
+  // Add a new user (admin only)
+router.post('/add-user', verifyAdmin, async (req, res) => {
+  try {
+    const { name, email, password, isAdmin } = req.body;
+
+    // Check if user already exists
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    const newUser = new User({ name, email, password, isAdmin });
+    await newUser.save();
+
+    res.status(201).json({ message: 'User added successfully', user: newUser });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to add user', error: err.message });
+  }
+});
+// PUT /user/update-name
+router.put('/update-name', verifyToken, async (req, res) => {
+  const { name } = req.body;
+  const userId = req.user.id;
+
+  const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { name },
+      { new: true }
+  );
+
+  res.json({ user: updatedUser });
+});
+
   
   
 module.exports = router;
