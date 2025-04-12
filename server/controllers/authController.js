@@ -2,7 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// Generate JWT token
+// creating  JWT token here 
 const generateToken = (user) => {
   return jwt.sign(
     { id: user._id, email: user.email, isAdmin: user.isAdmin },

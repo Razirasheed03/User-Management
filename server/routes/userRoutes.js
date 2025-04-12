@@ -65,6 +65,8 @@ router.get('/all-users', verifyToken, async (req, res) => {
       res.status(500).json({ message: 'Failed to fetch users', error: err.message });
     }
   });
+
+  
   router.delete('/delete-user/:id', verifyToken, async (req, res) => {
     try {
       if (!req.user.isAdmin) {
@@ -108,6 +110,7 @@ router.get('/all-users', verifyToken, async (req, res) => {
       res.status(500).json({ message: 'Update failed', error: err.message });
     }
   });
+
   // Add a new user (admin only)
 router.post('/add-user', verifyAdmin, async (req, res) => {
   try {
@@ -127,6 +130,7 @@ router.post('/add-user', verifyAdmin, async (req, res) => {
     res.status(500).json({ message: 'Failed to add user', error: err.message });
   }
 });
+
 // PUT /user/update-name
 router.put('/update-name', verifyToken, async (req, res) => {
   const { name } = req.body;
