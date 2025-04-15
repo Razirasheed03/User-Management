@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-// Reusable helper to decode token
+// Reusable helper to decode tokenssss
 const decodeToken = (req) => {
   const authHeader = req.headers.authorization;
 
@@ -9,10 +9,10 @@ const decodeToken = (req) => {
   }
 
   const token = authHeader.split(' ')[1];
-  return jwt.verify(token, process.env.JWT_SECRET); // throws error if invalid
+  return jwt.verify(token, process.env.JWT_SECRET);
 };
 
-// Middleware to verify regular token
+// Middleware to verify regular tokenssss
 const verifyToken = (req, res, next) => {
   try {
     const decoded = decodeToken(req);
@@ -23,7 +23,7 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-// Middleware to verify admin token
+// Middleware to verify admin tokenssss
 const verifyAdmin = (req, res, next) => {
   try {
     const decoded = decodeToken(req);
